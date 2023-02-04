@@ -19,6 +19,14 @@
                     <select name="variant" id="" class="form-control">
                         <option selected disabled>--Select A Variant--</option>
 
+                        {% for variant in product_variants %}
+                        
+                        <option value="{{ variant.variant_title}}">{{ variant.variant_title}}</option>
+                        
+                        {% endfor %}
+
+                        
+
                     </select>
                 </div>
 
@@ -53,51 +61,32 @@
                         <th width="150px">Action</th>
                     </tr>
                     </thead>
-
+                    {% for product in page_obj  %}
                     <tbody>
                     <tr>
-                        <td>1</td>
-                        <td>T-Shirt <br> Created at : 25-Aug-2020</td>
-                        <td>Quality product in low cost</td>
+                        <td>{{ forloop.counter|add:page_obj.start_index|add:"-1"}}</td>
+                        <td>{{product.title}} <br> Created at : {{ product.created_at|timesince }} ago </td>
+                        <td>{{product.description}}</td>
+                        
                         <td>
                             <dl class="row mb-0" style="height: 80px; overflow: hidden" id="variant">
+                                
+                                {% for variant in variant_prices %}
+                                {% if variant.product.id == product.id %}
+                                
                                 <dt class="col-sm-3 pb-0">
-                                    XL/ Black/ Full
+                                    {{ variant.product_variant_one.variant_title }}/ {{ variant.product_variant_two.variant_title }}/ {{ variant.product_variant_three.variant_title }}
                                 </dt>
                                 <dd class="col-sm-9">
                                     <dl class="row mb-0">
-                                        <dd class="col-sm-4 pb-0">Price : 200.0</dd>
-                                        <dd class="col-sm-8 pb-0">InStock : 50.</dd>
+                                        <dd class="col-sm-4 pb-0">Price : {{ variant.price }}</dd>
+                                        <dd class="col-sm-8 pb-0">InStock : {{ variant.stock }}</dd>
                                     </dl>
                                 </dd>
-                                <dt class="col-sm-3 pb-0">
-                                    XL/ Black/ Half
-                                </dt>
-                                <dd class="col-sm-9">
-                                    <dl class="row mb-0">
-                                        <dd class="col-sm-4 pb-0">Price : 200.0</dd>
-                                        <dd class="col-sm-8 pb-0">InStock : 50.</dd>
-                                    </dl>
-                                </dd>
-                                <dt class="col-sm-3 pb-0">
-                                    L/ Black/ Full
-                                </dt>
-                                <dd class="col-sm-9">
-                                    <dl class="row mb-0">
-                                        <dd class="col-sm-4 pb-0">Price : 200.0</dd>
-                                        <dd class="col-sm-8 pb-0">InStock : 50.</dd>
-                                    </dl>
-                                </dd>
-                                <dt class="col-sm-3 pb-0">
-                                    L/ Black/ Half
-                                </dt>
-                                <dd class="col-sm-9">
-                                    <dl class="row mb-0">
-                                        <dd class="col-sm-4 pb-0">Price : 200.0</dd>
-                                        <dd class="col-sm-8 pb-0">InStock : 50.</dd>
-                                    </dl>
-                                </dd>
-                            </dl>
+                                {% endif %}
+
+                                {% endfor %}
+                                
                             <button onclick="$('#variant').toggleClass('h-auto')" class="btn btn-sm btn-link">Show more
                             </button>
                         </td>
@@ -108,7 +97,8 @@
                         </td>
                     </tr>
                     </tbody>
-
+                    {% endfor %}
+                    
                 </table>
             </div>
 
@@ -117,12 +107,51 @@
         <div class="card-footer">
             <div class="row justify-content-between">
                 <div class="col-md-6">
-                    <p>Showing 1 to 10 out of 100</p>
+                    <p>Showing {{ page_obj.start_index }} to {{ page_obj.end_index  }} out of {{ paginator.count }}</p>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
+                    <nav aria-label="...">
+                    <div class="pagination">
+                       
+                        {% if page_obj.has_previous %}
+                        <li class="page-item "> 
+                          <a class="page-link" href="?page={{page_obj.previous_page_number}}" tabindex="-1">&laquo;</a> 
+                        </li>
+                        {% endif %}
+                        
+                        {% for pg in page_obj.paginator.page_range %}
 
+                        {% if page_obj.number == pg %}
+                        <li class="page-item active">
+                          <a class="page-link" href="?page={{pg}}">{{pg}} <span class="sr-only"></span></a>
+                        </li>
+
+                        {% else %}
+                        <li class="page-item"><a class="page-link" href="?page={{pg}}">{{pg}}</a></li>
+                        {% endif %}
+                        
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                          <a class="page-link" href="?page={{page_obj.next_page_number}}">&raquo;</a>
+                        </li>
+                        {% endif %}
+
+                        
+                        </nav>
+                      </div>
+                     
+                      
                 </div>
             </div>
         </div>
+
+        
+        
+         
+        
     </div>
+
+    
 {% endblock %}
